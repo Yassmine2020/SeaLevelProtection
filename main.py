@@ -1,5 +1,6 @@
 import pandas as pd
 from collections import defaultdict
+import pdb
 import numpy as np
 df_assets_coo = pd.read_excel('instance_1.xlsx', sheet_name='Assets')
 df_levels = pd.read_excel('instance_1.xlsx', sheet_name='RegionLevel',header=None)
@@ -30,7 +31,7 @@ def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and ret
             if 0<=i+r<n and 0<=j+c<n:
                 q = count(i+r,j+c)
                 if q not in currentPath:
-                    if q == currentAsset or q not in assets:
+                    if q == currentAsset or q not in assets:#remove q not in assets to literaly generate all possible paths
                         if region[Rcount(q)] <=2:
                             NearBadZones(q, currentPath+[q], currentAsset)
 
@@ -38,4 +39,5 @@ def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and ret
 for asset in assets:
     for entry in entries:
         NearBadZones(entry,[entry],asset)
-print(T_Ci[count(2,6)])
+
+print(T_Ci[count(4,6)])
