@@ -7,7 +7,7 @@ from collections import defaultdict
 import numpy as np
 import pdb
 
-T_Ci, assets,slr,region, entries= pg.generator()
+T_Ci, assets, slr, region, entries= pg.generator()
 prob = LpProblem('assets_protection', LpMinimize)
 
 assetNentry = 0
