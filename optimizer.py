@@ -8,7 +8,7 @@ import numpy as np
 T_Ci, assets,slr,region = pg.generator()
 prob = LpProblem('assets_protection', LpMinimize)
 
-# decision variables+ objective function
+# decision variables
 x = np.zeros(region.shape()[0], range(8))
 obj = []
 for i in region.shape()[0]:
@@ -18,13 +18,14 @@ for i in region.shape()[0]:
 # objective function
 prob += lpSum(obj)
 x = np.array(x, ())
+#constraints
 for asset_label in T_Ci.keys():
     for road_labels in T_Ci[asset_label]:
         road_labels = [road_labels[0]]+road_labels # convention: x_ii =1 for i in entry means that we should place an barrier on the sea-entry i border
         temp = []
         for i in range(len(road_labels)-1):
             temp.append(x[road_labels[i+1],road_labels[i]])
-        prob += lpSum(temp)
+        prob += lpSum(temp) <=1
 
 status = prob.solve()
 
