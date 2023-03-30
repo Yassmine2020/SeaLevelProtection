@@ -26,6 +26,7 @@ def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and ret
         return
     if k == currentAsset and len(currentPath) == 1:
         T_Ci[currentAsset].append(currentPath[::-1])
+        return
     for r in (-1,0,1):
         for c in (-1,0,1):
             if 0<=i+r<n and 0<=j+c<n:
@@ -35,9 +36,8 @@ def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and ret
                         if region[Rcount(q)] <=2:
                             NearBadZones(q, currentPath+[q], currentAsset)
 
-
-for asset in assets:
-    for entry in entries:
-        NearBadZones(entry,[entry],asset)
-
-print(T_Ci[count(4,6)])
+def generator():
+    for asset in assets:
+        for entry in entries:
+            NearBadZones(entry,[entry],asset)
+    return T_Ci, assets,slr,region
