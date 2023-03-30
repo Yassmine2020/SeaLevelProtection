@@ -21,13 +21,10 @@ entries = list(set(entries))
 T_Ci = defaultdict(list)#maps key = asset to value = matrix of roads
 def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and returns a list of headers of near zones that have low elevation
     i,j = Rcount(k)
-    if k == currentAsset and len(currentPath)>1:
-        T_Ci[currentAsset].append(currentPath[::-1])
-        #print(currentPath[::-1])
-        return
-    if k == currentAsset and len(currentPath) == 1:
+    if k == currentAsset:
         T_Ci[currentAsset].append(currentPath[::-1])
         return
+
     for r in (-1,0,1):
         for c in (-1,0,1):
             if 0<=i+r<n and 0<=j+c<n:
@@ -37,7 +34,7 @@ def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and ret
                         if region[Rcount(q)] <=2:
                             NearBadZones(q, currentPath+[q], currentAsset)
 
-def generator():
+def generator(): #generates road from entries to assets inverted
     for asset in assets:
         for entry in entries:
             NearBadZones(entry,[entry],asset)
