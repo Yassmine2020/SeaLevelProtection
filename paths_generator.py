@@ -1,7 +1,6 @@
 import pandas as pd
 from collections import defaultdict
 import pdb
-import numpy as np
 df_assets_coo = pd.read_excel('instance_1.xlsx', sheet_name='Assets')
 df_levels = pd.read_excel('instance_1.xlsx', sheet_name='RegionLevel',header=None)
 df_param = pd.read_excel('instance_1.xlsx', sheet_name='Param')
