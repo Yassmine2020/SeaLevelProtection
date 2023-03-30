@@ -3,36 +3,41 @@ import sys
 sys.path.append('/paths_generator.py')
 import paths_generator as pg
 from pulp import *
+from collections import defaultdict
 import numpy as np
+import pdb
 
 T_Ci, assets,slr,region = pg.generator()
 prob = LpProblem('assets_protection', LpMinimize)
 
 # decision variables
-x = np.zeros(region.shape()[0], range(8))
+x =defaultdict(dict)
 obj = []
-for i in region.shape()[0]:
-    for j in range(8):
-        x[i,j] = LpVariable(name=f"x{i,j}", cat='Binary') #
-        obj.append(x[i,j]*(slr-region[i]))
+for zone in range(pg.count(0,0), pg.count(region.shape[0]-1, region.shape[1]-1)): # loop over labels of all zones
+    temp = []
+    m,k = pg.Rcount(zone)
+    for r in [-1, 0, 1]:
+        for c in [-1, 0, 1]:
+            q = pg.count(m+r,k+c) # q one of the surrounding 8 zones
+            temp.append(LpVariable(name=f"x{ zone,q}", cat='Binary'))
+            x[zone][zone,q] = temp[-1]
+            if slr > region[pg.Rcount(zone)] : obj.append((x[zone][zone,q]) *(slr-region[pg.Rcount(zone)]))
+
 # objective function
 prob += lpSum(obj)
-x = np.array(x, ())
 #constraints
-for asset_label in T_Ci.keys():
+for asset_label in assets:
     for road_labels in T_Ci[asset_label]:
-        road_labels = [road_labels[0]]+road_labels # convention: x_ii =1 for i in entry means that we should place an barrier on the sea-entry i border
         temp = []
         for i in range(len(road_labels)-1):
-            temp.append(x[road_labels[i+1],road_labels[i]])
-        prob += lpSum(temp) <=1
+            temp.append(x[road_labels[i+1]][road_labels[i+1], road_labels[i]])
+        prob += lpSum(temp) >=1
 
 status = prob.solve()
 
 # Print the values of the decision variables
-for i in region.shape()[0]:
-    for j in range(8):
-        if x[i,j].value() ==1 : print(f"x{i,j} = {x[i,j].value()}")
-        obj_value = value(prob.objective)
-print(f"Objective function value: {obj_value}")
+for zone in range(pg.count(0,0), pg.count(region.shape[0]-1, region.shape[1]-1)): # loop over labels of all zones
+    for var in x[zone].values():
+        print(f"{var.name}: {var.value()}")
+print(f"Objective function value: {value(prob.objective)}")
 
