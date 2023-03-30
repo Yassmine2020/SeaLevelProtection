@@ -41,4 +41,4 @@ def generator():
     for asset in assets:
         for entry in entries:
             NearBadZones(entry,[entry],asset)
-    return T_Ci, assets,slr,region
+    return T_Ci, assets,slr,region,entries
