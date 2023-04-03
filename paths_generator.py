@@ -11,6 +11,11 @@ slr = df_param.loc[df_param['Param'] == 'slr', 'Value'].iloc[0]
 assets =(df_assets_coo['Coordinate_1'] * n + df_assets_coo['Coordinate_2']).tolist()#contains headers of assets
 region = df_levels.to_numpy()
 entries = []#contains headers of zone with low elevation
+
+# Get the number of rows and columns of df_levels
+rows = df_levels.shape[0]
+cols = df_levels.shape[1]
+
 def count(i,j): return i*n+j
 def Rcount(k): return (k//n,k%n)
 for i in (0,n-1):
@@ -38,7 +43,7 @@ def generator(): #generates road from entries to assets inverted
     for asset in assets:
         for entry in entries:
             NearBadZones(entry,[entry],asset)
-    return T_Ci, assets, slr, region, entries
+    return T_Ci, assets, slr, region, entries, rows, cols
 
 '''
 *T_Ci : a dictionnary of asset : list of roads from that asset to an entry

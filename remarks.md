@@ -15,3 +15,6 @@ for example:
 ⇒ Which means T_Ci[8] is a matrix: each line presents the road i & I want to start from the entry to the assets, not the inverse 
 
 - If we will give the entries the height of the sea level rise then we will not need the variable entries as the output of the function generator(), and we will put instead their height in the matrix of region
+
+- I added smthg in the code : from line 14 to 18 number of rows and cols
+- generator function : returns also this number of rows and cols
