@@ -39,3 +39,31 @@ def generator(): #generates road from entries to assets inverted
         for entry in entries:
             NearBadZones(entry,[entry],asset)
     return T_Ci, assets, slr, region, entries
+
+'''
+*T_Ci : a dictionnary of asset : list of roads from that asset to an entry
+exmaple : 
+        {[8], [8, 17]} = T_Ci[8]
+        [[42, 51, 61, 71], [42, 50, 51, 61, 71], [42, 50, 60, 51, 61, 71]] : first three elements of T_Ci[42]
+        note that T_Ci[asset] is a list of lists. each sub-list defines a road from the asset to an entry 
+        + an entry is a zone directly open to the sea and whom elevation is less than slr
+        + in all those lists, I used labels given by the function Count instead of indicies 
+        
+*assets : list of labels of assets = [8, 24, 42] for instance_1
+
+*region : an np.array of elevations of each zone. it is like the table we see in excel: 
+                                    [[8 8 7 7 6 6 7 6 2]    labeled as    [[0,1,2,3,4,5,6,7,8]
+                                     [2 4 7 6 8 5 1 5 2]                   [9,10,11,12 .....]]
+                                     [4 8 7 3 4 5 2 5 6]
+                                     [6 8 2 6 5 2 8 8 7]
+                                     [1 8 8 3 4 9 2 3 6]
+                                     [9 5 7 7 3 1 1 3 2]
+                                     [5 3 2 5 3 4 2 1 1]
+                                     [7 3 9 6 9 6 2 4 2]
+                                     [7 4 3 1 1 1 5 1 8]]
+we can easily obtain the elevation of zone
+example  : elevation of zone 0 (first zone) = region[Rcount(0)] = region[(0,0)] = 8 
+            elevation of zone 8 =  region[Rcount(8)] = region[(0,9)] = 2
+entries  : list of labels of entries : [36, 71, 8, 9, 75, 76, 77, 79, 17, 53, 62] for instance_1
+                    + an entry is a zone directly open to the sea and whom elevation is less than slr
+'''
