@@ -1,10 +1,8 @@
-import pulp
 import sys
 sys.path.append('/paths_generator.py')
 import paths_generator as pg
-from pulp import *
 from collections import defaultdict
-import numpy as np
+from pulp import *
 import pdb
 
 T_Ci, assets, slr, region, entries= pg.generator()
