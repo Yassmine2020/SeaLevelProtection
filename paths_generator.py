@@ -40,12 +40,6 @@ def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and ret
                         if region[Rcount(q)] <=2:
                             NearBadZones(q, currentPath+[q], currentAsset)
 
-def generator(): #generates road from entries to assets inverted
-    for asset in assets:
-        for entry in entries:
-            NearBadZones(entry,[entry],asset)
-    return T_Ci, assets, slr, region, entries, rows, cols
-generator()
 
 #for yassmine's code
 T_Cy = {}
@@ -57,8 +51,15 @@ for asset in T_Ci.keys():
     for road in T_Ci[asset]:
         temp.append(road[::-1] + [np.nan]*(maxlength - len(road)))
     T_Cy[asset] = np.array(temp)
-#T_Cy
-breakpoint()
+
+def generator(): #generates road from entries to assets inverted
+    for asset in assets:
+        for entry in entries:
+            NearBadZones(entry,[entry],asset)
+    return T_Ci, assets, slr, region, entries, rows, cols,T_Cy
+
+
+
 '''
 *T_Ci : a dictionnary of asset : list of roads from that asset to an entry
 exmaple : 
