@@ -44,7 +44,7 @@ def generator(): #generates road from entries to assets inverted
         for entry in entries:
             NearBadZones(entry,[entry],asset)
     return T_Ci, assets, slr, region, entries, rows, cols
-
+generator()
 '''
 *T_Ci : a dictionnary of asset : list of roads from that asset to an entry
 exmaple : 
