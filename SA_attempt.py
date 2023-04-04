@@ -33,8 +33,7 @@ def objective(x):  # m, n depends on the path: temperary
     # for constraint in constarray:
     #     S+= penalty_factor*max(0, constraint)
     return S
-#return the amount to be minimized
-
+#returns the amount to be minimized
 
 
 bounds = [(0, 1) for _ in range(zones_number**2)]

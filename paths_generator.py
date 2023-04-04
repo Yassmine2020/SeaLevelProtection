@@ -1,5 +1,6 @@
 import pandas as pd
 from collections import defaultdict
+import numpy as np
 import pdb
 
 
@@ -45,10 +46,23 @@ def generator(): #generates road from entries to assets inverted
             NearBadZones(entry,[entry],asset)
     return T_Ci, assets, slr, region, entries, rows, cols
 generator()
+
+#for yassmine's code
+T_Cy = {}
+for asset in T_Ci.keys():
+    maxlength = 0
+    temp = []
+    for road in T_Ci[asset]:
+        maxlength = max(maxlength, len(road))
+    for road in T_Ci[asset]:
+        temp.append(road[::-1] + [np.nan]*(maxlength - len(road)))
+    T_Cy[asset] = np.array(temp)
+#T_Cy
+breakpoint()
 '''
 *T_Ci : a dictionnary of asset : list of roads from that asset to an entry
 exmaple : 
-        {[8], [8, 17]} = T_Ci[8]
+        [[8], [8, 17]] = T_Ci[8]
         [[42, 51, 61, 71], [42, 50, 51, 61, 71], [42, 50, 60, 51, 61, 71]] : first three elements of T_Ci[42]
         note that T_Ci[asset] is a list of lists. each sub-list defines a road from the asset to an entry 
         + an entry is a zone directly open to the sea and whom elevation is less than slr
@@ -71,4 +85,19 @@ example  : elevation of zone 0 (first zone) = region[Rcount(0)] = region[(0,0)] 
             elevation of zone 8 =  region[Rcount(8)] = region[(0,9)] = 2
 entries  : list of labels of entries : [36, 71, 8, 9, 75, 76, 77, 79, 17, 53, 62] for instance_1
                     + an entry is a zone directly open to the sea and whom elevation is less than slr
+
+
+                
+*T_Cy is made to replace T_Ci for Yassmine's code
+how it looks : 
+print(T_Cy[42][0:3]) : first three road leading to asset 42
+[[71. 61. 51. 42. nan nan nan nan nan nan nan nan nan]
+ [71. 61. 51. 50. 42. nan nan nan nan nan nan nan nan]
+ [71. 61. 51. 60. 50. 42. nan nan nan nan nan nan nan]]
+ 
+ 
+ print(T_Cy[8]) : all road leading to asset 8:
+[[ 8. nan]
+ [17.  8.]]
+(Pdb) 
 '''
