@@ -13,7 +13,7 @@ assets =(df_assets_coo['Coordinate_1'] * n + df_assets_coo['Coordinate_2']).toli
 region = df_levels.to_numpy()
 entries = []#contains headers of zone with low elevation
 rows, cols = df_levels.shape
-
+zones_number = region.shape[0]*region.shape[1]
 def count(i,j): return i*n+j
 def Rcount(k): return (k//n,k%n)
 for i in (0,n-1):
