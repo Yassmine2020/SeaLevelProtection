@@ -8,7 +8,7 @@ import time
 #PS varialbes
 problem = 'minimize'
 n_particles = 200
-n_iterations = 20
+n_iterations = 20 # 500 was suggested
 inertia_coeff = 0.9  # inertia constant
 c1 = 1  # cognitive constant
 c2 = 2  # social constant
