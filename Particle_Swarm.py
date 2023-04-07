@@ -1,3 +1,8 @@
+"""
+@Author: Alaaeddine Maggouri
+@finished on : 4/5/2023
+
+"""
 import sys
 sys.path.append('/paths_generator.py')
 import paths_generator as pg
