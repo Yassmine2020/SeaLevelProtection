@@ -154,7 +154,6 @@ class PSO:
         print('Oblective function net value :', fitness_global_best_particle_position - S )
 
 
-        EPS = 1.e-1
         x = global_best_particle_position
         x = np.array(x)
         x = np.reshape(x,(pg.zones_number, pg.zones_number))
