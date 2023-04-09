@@ -39,7 +39,8 @@ def objective(x):  # m, n depends on the path: temperary
     for i in range(zones_number):
         e_i = pg.region[pg.Rcount(i)]
         for j in range(zones_number):
-            S += x[i][j] * (pg.slr - e_i)
+            S += x[i][j] * max(0, pg.slr - e_i)
+            print(S)
     for constraint in constarray:
         S+= penalty_factor*max(0, constraint)**2
     return S
@@ -47,7 +48,7 @@ def objective(x):  # m, n depends on the path: temperary
 
 
 bounds = [(0, 1) for _ in range(zones_number**2)]
-result = dual_annealing(objective, bounds)
+result = dual_annealing(objective, bounds, maxiter = 2)
 
 x_optimal = result.x.reshape((zones_number,zones_number))
 print("Optimal solution found:\n", x_optimal)
