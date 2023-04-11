@@ -113,6 +113,7 @@ def PA():
         def update_position(self, bounds):#(ifs modified by alaa for binary particles)
             for i in range(n_vars):
                 self.particle_position[i] = self.particle_position[i] + self.particle_velocity[i]
+                print(self.particle_velocity[i])
 
                 # check and repair to satisfy the upper bounds
                 if self.particle_position[i] > 1:
@@ -181,4 +182,4 @@ def PA():
 
     PSO(objective, [], n_particles, n_iterations)
     plt.show()
-PA()
+PA() # set more particles
