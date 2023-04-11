@@ -8,9 +8,20 @@
 import pandas as pd
 from collections import defaultdict
 import numpy as np
+from tkinter import filedialog, Tk
+
+# Create a root window
+root = Tk()
+root.withdraw()
+
+# Show the file dialog and get the selected file
+file_path = filedialog.askopenfilename()
+
 
 size = input('run on which instance ? Choose 1,2 or 3 ')
+
 df_assets_coo = pd.read_excel('instance_'+size+'.xlsx', sheet_name='Assets')
+
 df_levels = pd.read_excel('instance_'+size+'.xlsx', sheet_name='RegionLevel',header=None)
 df_param = pd.read_excel('instance_'+size+'.xlsx', sheet_name='Param')
 n = df_param.loc[df_param['Param'] == 'dimension_1', 'Value'].iloc[0]
