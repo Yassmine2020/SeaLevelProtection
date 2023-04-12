@@ -28,7 +28,8 @@ def optimize():
         for r in [0,-1, 1]:
             for c in [0,-1, 1]:
                 q = pg.count(m+r,k+c) # q one of the surrounding 8 zones
-                temp.append(LpVariable(name=f"x{ pg.Rcount(zone),pg.Rcount(q)}", cat='Binary'))
+                #temp.append(LpVariable(name=f"x{ pg.Rcount(zone),pg.Rcount(q)}", cat='Binary'))
+                temp.append(LpVariable(name='Place barrier on zone '+str(pg.Rcount(zone)) +' against zone ' + str(pg.Rcount(q)), cat='Binary'))
                 x[zone][zone,q] = temp[-1]
                 if zone in entries and pg.Rcount(q) not in listI:
                     obj.append((x[zone][zone, zone]) * (slr - region[pg.Rcount(zone)]))
@@ -63,7 +64,9 @@ def optimize():
     # Print the values of the decision variables
     for zone in range(pg.count(0,0), pg.count(region.shape[0]-1, region.shape[1]-1)): # loop over labels of all zones
         for var in x[zone].values():
-            if var.value()==1: print(f"{var.name}: {var.value()}")
+            if var.value()==1:
+                new_string = var.name.replace("_", " ")
+                print(f"{new_string}")
     print(f"Objective function value: {value(prob.objective)}")
     # print('total cost = objective function value + barriers for assets on the edges of the island = ', value(prob.objective) + assetNentry )
     # print('assets on the edge of the island', assetsNentries)
