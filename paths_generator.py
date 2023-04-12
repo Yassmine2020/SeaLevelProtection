@@ -8,12 +8,11 @@
 import pandas as pd
 from collections import defaultdict
 import numpy as np
-import pdb
 
-
-df_assets_coo = pd.read_excel('instance_1.xlsx', sheet_name='Assets')
-df_levels = pd.read_excel('instance_1.xlsx', sheet_name='RegionLevel',header=None)
-df_param = pd.read_excel('instance_1.xlsx', sheet_name='Param')
+size = input('run on which instance ? Choose 1,2 or 3 ')
+df_assets_coo = pd.read_excel('instance_'+size+'.xlsx', sheet_name='Assets')
+df_levels = pd.read_excel('instance_'+size+'.xlsx', sheet_name='RegionLevel',header=None)
+df_param = pd.read_excel('instance_'+size+'.xlsx', sheet_name='Param')
 n = df_param.loc[df_param['Param'] == 'dimension_1', 'Value'].iloc[0]
 slr = df_param.loc[df_param['Param'] == 'slr', 'Value'].iloc[0]
 assets =(df_assets_coo['Coordinate_1'] * n + df_assets_coo['Coordinate_2']).tolist()#contains headers of assets
