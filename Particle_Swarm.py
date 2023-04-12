@@ -10,27 +10,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-#PS varialbes
-problem = 'minimize'
-n_particles = 200
-n_iterations = 20 # 500 was suggested
-inertia_coeff = 0.9  # inertia constant
-c1 = 1  # cognitive constant
-c2 = 2  # social constant
-#constraints
-def constraints(x):
-    constraints_list = []
-    x = np.array(x)
-    x = np.reshape(x,(pg.zones_number,pg.zones_number))
-    for asset_label in pg.T_Ci.keys():
-        for road_labels in pg.T_Ci[asset_label]:
-            temp = []
-            for i in range(len(road_labels)-1):
-                temp.append(x[road_labels[i+1]][road_labels[i]])
-            temp.append(x[road_labels[-1]][road_labels[-1], road_labels[-1]])
-            constraints_list.append(1-sum(temp))
-    return np.array(constraints_list)
-#returns an array where each element should be <= 0
+def PA():
+    #PS varialbes
+    problem = 'minimize'
+    n_particles = int(input('enter number of particles (we suggest 200)'))
+    n_iterations = int(input('enter number of iterations (we suggest 500)'))
+    inertia_coeff = 0.9  # inertia constant
+    c1 = 1  # cognitive constant
+    c2 = 2  # social constant
+    #constraints
+    def constraints(x):
+        # takes a list of xij- i refers to a zone label-j refers to one of its 8 surrounding zones
+        # returns an array where each element should be <= 0
+
+        constraints_list = []
+        x = np.array(x)
+        x = np.reshape(x, (pg.zones_number, 8))
+        for asset_label in pg.T_Ci.keys():
+            for road_labels in pg.T_Ci[asset_label]:
+                temp = []
+                for i in range(len(road_labels) - 1):
+                    m, k = pg.Rcount(road_labels[i + 1])
+                    util = 0
+                    for r in [-1, 0, 1]:
+                        l = [-1, 0, 1] if r != 0 else [-1, 1]
+                        for c in l:
+                            util += 1
+                            if pg.count(m + r, k + c) == road_labels[i]:
+                                temp.append(x[road_labels[i + 1]][util - 1])
+                constraints_list.append(1 - sum(temp))
+        return np.array(constraints_list)
 
     penalty_factor = 100
 
