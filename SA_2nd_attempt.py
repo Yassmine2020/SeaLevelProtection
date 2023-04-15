@@ -92,7 +92,7 @@ class SimulatedAnneling():
         new_solution = current_solution.copy()
 
         # Take 2 random indexes
-        indexes_to_swap = random.sample(list(range(self.D)), 7)
+        indexes_to_swap = random.sample(list(range(self.D)), 2)
         idx1, idx2 = indexes_to_swap[0], indexes_to_swap[1]
 
         # Swap the values from the indexes and handle entries problem and eleminate useless barriers
@@ -168,7 +168,7 @@ class SimulatedAnneling():
 
 t0 = 1e100
 tmin = 0.1
-alpha = 0.9 # focus on this 0.9999999 or larger values so close to 1 and   THINK OF BIGGER NUMBER OF SWITCHES IN NEW STEP FUNCTION
+alpha = 0.9999 # focus on this 0.9999999 or larger values so close to 1 and   THINK OF BIGGER NUMBER OF SWITCHES IN NEW STEP FUNCTION
 sa = SimulatedAnneling(objective, t0, tmin, alpha)
 print(sa.execute())
 #it once gave 36
