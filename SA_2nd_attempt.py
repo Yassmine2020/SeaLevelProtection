@@ -2,13 +2,21 @@
 @author : Sir Alaaeddine Maggouri
 @finishid on : 10/4/2023
 '''
-
+import matplotlib.pyplot as plt
 import random
 import math
 import numpy as np
 import paths_generator as pg
 from collections import defaultdict
+pg.generator()
 
+interisting_zones = defaultdict(int)
+for i in range(pg.zones_number):
+    for asset in pg.T_Ci.keys():
+        for road in pg.T_Ci[asset]:
+            if i in road:
+                interisting_zones[i] = 1
+                break
 
 util_later1 = {}# move cpl to index
 util_later2 = {}#index to move cpl
@@ -32,17 +40,31 @@ def constraints(x):
     for asset_label in pg.T_Ci.keys():
         for road_labels in pg.T_Ci[asset_label]:
             temp = []
+            m, k = pg.Rcount(road_labels[0])
+            for r in [-1, 0, 1]:
+                for c in [-1, 0, 1]:
+                    if road_labels[0] in pg.entries and not (m + r, k + c) in listI:
+                        temp.append(x[road_labels[0]][4])
+                    if len(road_labels)>1 and pg.count(m + r, k + c) == road_labels[1]:
+                        temp.append(x[road_labels[0]][util_later1[(r, c)]])
             for i in range(len(road_labels)-1):
                 visited_entry = 0
                 m,k = pg.Rcount(road_labels[i+1])
+                mm,kk = pg.Rcount(road_labels[i])
                 for r in [-1, 0, 1]:
                     for c in [-1,0,1]:
-                        if i in pg.entries and (not pg.count(m+r, k+c) in listI) :
-                            if  not visited_entry:
+                        if road_labels[i+1] in pg.entries and not (m+r, k+c) in listI :
+                            if not visited_entry:
                                 temp.append(x[road_labels[i+1]][4])
                                 visited_entry = 1
-                        elif pg.count(m+r, k+c) == road_labels[i]:
-                            temp.append(x[road_labels[i+1]][util_later1[(r,c)]])
+                        on_current = 0
+                        on_other_side = 0
+                        if pg.count(m+r, k+c) == road_labels[i]:
+                            #temp.append(x[road_labels[i+1]][util_later1[(r,c)]])
+                            on_current = x[road_labels[i+1]][util_later1[(r,c)]]
+                        if pg.count(mm+r, kk+c) == road_labels[i+1]:
+                            on_other_side = x[road_labels[i]][util_later1[(r,c)]]
+                        temp.append(on_other_side or on_current)
             constraints_list.append(1-sum(temp))
     return np.array(constraints_list)
 
@@ -78,7 +100,32 @@ class SimulatedAnneling():
         self.D = pg.zones_number *9
 
     def generate_initial_solution(self):
-        return [random.randint(0, 1) for _ in range(self.D)]
+        init = [0 for _ in range(self.D)]
+        init = np.array(init)
+        init = np.reshape(init, (pg.zones_number, 9))
+        for i in pg.assets:
+            for j in range(9):
+                init[i][j] = 1
+            init[i][4] = 0
+        for i in range(pg.zones_number):
+            list_foreign_indices = []
+            for j in range(9):
+                if not interisting_zones[i]:
+                    init[i][j] = 0
+                    continue
+                if interisting_zones and not (pg.Rcount(i)[0]+util_later2[ j ][0] , pg.Rcount(i)[1]+util_later2[j ][1]) in listI:
+                    list_foreign_indices.append(j)
+                elif interisting_zones and pg.region[(pg.Rcount(i)[0] + util_later2[j][0], pg.Rcount(i)[1] + util_later2[j][1])] >= pg.slr:
+                    init[i][j] = 0
+            if interisting_zones[i]:
+                for inx in list_foreign_indices:
+                    if init[i][inx] == 1:
+                        entries_risk_foreign[i] += 1
+                        init[i][inx]= 0
+                if entries_risk_foreign[i]: init[i][4] =1
+                else : init[i][4] = 0
+        # return [random.randint(0, 1) for _ in range(self.D)]
+        return list(init.reshape(self.D,))
 
     def update_temp(self, current_temp):
         new_temp = self.alpha * current_temp
@@ -92,27 +139,39 @@ class SimulatedAnneling():
         new_solution = current_solution.copy()
 
         # Take 2 random indexes
-        indexes_to_swap = random.sample(list(range(self.D)), 7)
+        indexes_to_swap = random.sample(list(range(self.D)), 2)
         idx1, idx2 = indexes_to_swap[0], indexes_to_swap[1]
+        new_solution[idx1], new_solution[idx2]= new_solution[idx2],new_solution[idx1]
 
-        # Swap the values from the indexes and handle entries problem and eleminate useless barriers
-        new_solution[idx1], new_solution[idx2] = new_solution[idx2], new_solution[idx1]
+        # Take 5 random indexes
 
+        # indexes_to_swap = random.sample(list(range(self.D)), 7)
+        # idx1, idx2,idx3, idx4, idx5,idx6,idx7 = indexes_to_swap[0], indexes_to_swap[1],indexes_to_swap[2],indexes_to_swap[3],indexes_to_swap[4],indexes_to_swap[5],indexes_to_swap[6]
+        # new_solution[idx1], new_solution[idx2],new_solution[idx3],new_solution[idx4],new_solution[idx5],new_solution[idx6] ,new_solution[idx7]  = \
+        #     new_solution[idx2], new_solution[idx3],new_solution[idx4],new_solution[idx5],new_solution[idx6],new_solution[idx7],new_solution[idx1]
+        # # Swap the values from the indexes and handle entries problem and eleminate useless barriers
+        # #no barriers on zones having part in no road
         x_temp = np.array(new_solution)
         x_temp = np.reshape(x_temp, (pg.zones_number, 9))
         for i in range(pg.zones_number):
             list_foreign_indices = []
             for j in range(9):
-                if not (pg.Rcount(i)[0]+util_later2[ j ][0] , pg.Rcount(i)[1]+util_later2[j ][1]) in listI:
-                    list_foreign_indices.append(j)
-                elif pg.region[(pg.Rcount(i)[0] + util_later2[j][0], pg.Rcount(i)[1] + util_later2[j][1])] > pg.slr:
+                if not interisting_zones[i]:
                     x_temp[i][j] = 0
-            for inx in list_foreign_indices:
-                if x_temp[i][inx] == 1:
-                    entries_risk_foreign[i] += 1
-                    x_temp[i][inx]= 0
-            if entries_risk_foreign[i]: x_temp[i][4] =1
-            else : x_temp[i][4] = 0
+                    continue
+                if interisting_zones and not (pg.Rcount(i)[0]+util_later2[ j ][0] , pg.Rcount(i)[1]+util_later2[j ][1]) in listI:
+                    list_foreign_indices.append(j)
+                elif interisting_zones and pg.region[(pg.Rcount(i)[0] + util_later2[j][0], pg.Rcount(i)[1] + util_later2[j][1])] >= pg.slr:
+                    x_temp[i][j] = 0
+            if interisting_zones[i]:
+                for inx in list_foreign_indices:
+                    if x_temp[i][inx] == 1:
+                        entries_risk_foreign[i] += 1
+                        x_temp[i][inx]= 0
+                if entries_risk_foreign[i]: x_temp[i][4] =1
+                else : x_temp[i][4] = 0
+
+
 
         return list(x_temp.reshape(pg.zones_number*9))
 
@@ -125,12 +184,16 @@ class SimulatedAnneling():
         self.Xfitness = self.function(self.X)
         self.best = self.X.copy()
         self.F_min = self.Xfitness
+        self.values = [self.Xfitness]
+        self.iterations = [0]
 
         t = self.T0
         while t > self.Tmin:
+            self.iterations.append(self.iterations[-1]+1)
             # Generate a new solution from the current X solution
             newX = self.next_step(self.X)
             newX_fitness = self.function(newX)
+            self.values.append(newX_fitness)
 
             delta_fitness = newX_fitness - self.Xfitness
 
@@ -140,7 +203,7 @@ class SimulatedAnneling():
             else:
                 p = self.get_probability(delta_fitness, t)
 
-                if random.random() < p:
+                if 0.2 <= p:#small or random
                     self.X = newX.copy()
                     self.Xfitness = newX_fitness
 
@@ -157,13 +220,13 @@ class SimulatedAnneling():
             S += penalty_factor * max(0, constraint) ** 2
         print('RESULTS:')
         print('Objective function value(+ penalty):', self.F_min)
-        print('Oblective function net value :', self.F_min - S)
+        print('Objective function net value :', self.F_min - S)
         for i in range(pg.zones_number):
             for j in range(9):
                 if x[i][j] == 1:
                     print('place barrier on zone '+ str(pg.Rcount(i))+' against zone '+ str((pg.Rcount(i)[0]+util_later2[ j ][0] , pg.Rcount(i)[1]+util_later2[j ][1])))
-
-        return self.F_min
+        plt.plot(self.iterations, self.values)
+        plt.show()
 
 
 t0 = 1e100

@@ -54,6 +54,9 @@ for asset in T_Ci.keys():
         temp.append(road[::-1] + [np.nan]*(maxlength - len(road)))
     T_Cy[asset] = np.array(temp)
 
+
+
+
 def generator(): #generates road from entries to assets inverted
     for asset in assets:
         for entry in entries:
