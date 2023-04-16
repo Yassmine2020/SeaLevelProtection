@@ -11,8 +11,10 @@ from collections import defaultdict
 from pulp import *
 import pdb
 
+
 def optimize():
-    T_Ci, assets, slr, region, entries, rows, cols,T_Cy= pg.generator()
+    print("hey")
+    T_Ci, assets, slr, region, entries, rows, cols= pg.generator()
     prob = LpProblem('assets_protection', LpMinimize)
     listI = [pg.Rcount(header) for header in range(0,pg.count(rows -1, cols -1))]
 
@@ -70,4 +72,5 @@ def optimize():
     print(f"Objective function value: {value(prob.objective)}")
     # print('total cost = objective function value + barriers for assets on the edges of the island = ', value(prob.objective) + assetNentry )
     # print('assets on the edge of the island', assetsNentries)
+
 optimize()
