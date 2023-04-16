@@ -54,6 +54,9 @@ def NearBadZones(k,currentPath,currentAsset):#takes the header of a zone and ret
 #         temp.append(road[::-1] + [np.nan]*(maxlength - len(road)))
 #     T_Cy[asset] = np.array(temp)
 
+
+
+
 def generator(): #generates road from entries to assets inverted
     for asset in assets:
         for entry in entries:
